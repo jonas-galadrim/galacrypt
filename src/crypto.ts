@@ -45,13 +45,13 @@ const getEncryptedHashIfExists = (path: string) => {
   return lines[1];
 };
 
-export const encryptFile = ({ inputPath, outputPath, secretKey }: FileIoInput) => {
+export const encryptFile = ({ inputPath, outputPath, secretKey }: FileIoInput): boolean => {
   const inputFileContent = fs.readFileSync(inputPath);
   const outputFileHash = getEncryptedHashIfExists(outputPath);
   const inputFileHash = hash(inputFileContent);
 
   if (outputFileHash && outputFileHash === inputFileHash) {
-    return;
+    return false;
   }
 
   const encrypted = encrypt(inputFileContent, secretKey);
@@ -61,6 +61,7 @@ ${encrypted.iv}
 ${encrypted.encryptedData}`;
 
   fs.writeFileSync(outputPath, outputFileContent);
+  return true;
 };
 
 export const decryptFile = ({ inputPath, outputPath, secretKey }: FileIoInput) => {
